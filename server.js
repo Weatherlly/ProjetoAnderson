@@ -43,6 +43,59 @@ app.get('/api/checklists', (req, res) => {
   res.json(checklists);
 });
 
+// Editar checklist
+app.put('/api/checklists/:id', (req, res) => {
+  try {
+    const checklistId = parseInt(req.params.id);
+    const updatedChecklist = req.body;
+    
+    const checklists = readJSON('checklists.json');
+    const checklistIndex = checklists.findIndex(c => c.id === checklistId);
+    
+    if (checklistIndex === -1) {
+      return res.status(404).json({ error: 'Checklist não encontrado' });
+    }
+    
+    // Atualizar checklist mantendo ID e data originais
+    checklists[checklistIndex] = {
+      ...checklists[checklistIndex],
+      ...updatedChecklist,
+      id: checklistId, // Manter ID original
+      date: checklists[checklistIndex].date // Manter data original
+    };
+    
+    writeJSON('checklists.json', checklists);
+    res.json({ success: true, message: 'Checklist atualizado com sucesso' });
+    
+  } catch (error) {
+    console.error('Erro ao atualizar checklist:', error);
+    res.status(500).json({ error: 'Erro ao atualizar checklist' });
+  }
+});
+
+// Excluir checklist
+app.delete('/api/checklists/:id', (req, res) => {
+  try {
+    const checklistId = parseInt(req.params.id);
+    const checklists = readJSON('checklists.json');
+    const checklistIndex = checklists.findIndex(c => c.id === checklistId);
+    
+    if (checklistIndex === -1) {
+      return res.status(404).json({ error: 'Checklist não encontrado' });
+    }
+    
+    // Remover checklist
+    checklists.splice(checklistIndex, 1);
+    writeJSON('checklists.json', checklists);
+    
+    res.json({ success: true, message: 'Checklist excluído com sucesso' });
+    
+  } catch (error) {
+    console.error('Erro ao excluir checklist:', error);
+    res.status(500).json({ error: 'Erro ao excluir checklist' });
+  }
+});
+
 app.post('/api/checklists', (req, res) => {
   const newChecklist = req.body;
   const checklists = readJSON('checklists.json');
@@ -151,6 +204,59 @@ app.put('/api/checklists/:id/items', (req, res) => {
 app.get('/api/feedbacks', (req, res) => {
   const feedbacks = readJSON('feedbacks.json');
   res.json(feedbacks);
+});
+
+// Editar feedback
+app.put('/api/feedbacks/:id', (req, res) => {
+  try {
+    const feedbackId = parseInt(req.params.id);
+    const updatedFeedback = req.body;
+    
+    const feedbacks = readJSON('feedbacks.json');
+    const feedbackIndex = feedbacks.findIndex(f => f.id === feedbackId);
+    
+    if (feedbackIndex === -1) {
+      return res.status(404).json({ error: 'Feedback não encontrado' });
+    }
+    
+    // Atualizar feedback mantendo ID e data originais
+    feedbacks[feedbackIndex] = {
+      ...feedbacks[feedbackIndex],
+      ...updatedFeedback,
+      id: feedbackId, // Manter ID original
+      date: feedbacks[feedbackIndex].date // Manter data original
+    };
+    
+    writeJSON('feedbacks.json', feedbacks);
+    res.json({ success: true, message: 'Feedback atualizado com sucesso' });
+    
+  } catch (error) {
+    console.error('Erro ao atualizar feedback:', error);
+    res.status(500).json({ error: 'Erro ao atualizar feedback' });
+  }
+});
+
+// Excluir feedback
+app.delete('/api/feedbacks/:id', (req, res) => {
+  try {
+    const feedbackId = parseInt(req.params.id);
+    const feedbacks = readJSON('feedbacks.json');
+    const feedbackIndex = feedbacks.findIndex(f => f.id === feedbackId);
+    
+    if (feedbackIndex === -1) {
+      return res.status(404).json({ error: 'Feedback não encontrado' });
+    }
+    
+    // Remover feedback
+    feedbacks.splice(feedbackIndex, 1);
+    writeJSON('feedbacks.json', feedbacks);
+    
+    res.json({ success: true, message: 'Feedback excluído com sucesso' });
+    
+  } catch (error) {
+    console.error('Erro ao excluir feedback:', error);
+    res.status(500).json({ error: 'Erro ao excluir feedback' });
+  }
 });
 
 app.post('/api/feedbacks', (req, res) => {

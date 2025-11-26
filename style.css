@@ -284,3 +284,39 @@ body {
     color: #155724;
     border: 1px solid #c3e6cb;
 }
+
+/* Estilos para botões de ação */
+.btn-edit {
+  background-color: #ffc107;
+  color: #000;
+  margin-right: 5px;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}
+
+.btn-small {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* Ajustes na tabela */
+.table td {
+  vertical-align: middle;
+}
+
+.table th:last-child,
+.table td:last-child {
+  width: 150px;
+  text-align: center;
+}

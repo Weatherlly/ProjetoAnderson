@@ -61,95 +61,105 @@ window.showDashboard = async function() {
 };
 
 window.showChecklists = async function() {
-    const contentArea = document.getElementById('contentArea');
-    const contentTitle = document.getElementById('contentTitle');
+  const contentArea = document.getElementById('contentArea');
+  const contentTitle = document.getElementById('contentTitle');
+  
+  contentTitle.textContent = 'Checklists';
+  
+  try {
+    const checklists = await fetchChecklists();
     
-    contentTitle.textContent = 'Checklists';
-    
-    try {
-        const checklists = await fetchChecklists();
-        
-        if (checklists.length === 0) {
-            contentArea.innerHTML = '<p>Nenhum checklist criado ainda.</p>';
-            return;
-        }
-        
-        let html = `
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Atribuído a</th>
-                        <th>Data</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        checklists.forEach(checklist => {
-            html += `
-                <tr>
-                    <td>${checklist.title}</td>
-                    <td>${checklist.assignee}</td>
-                    <td>${new Date(checklist.date).toLocaleDateString()}</td>
-                    <td><span class="status-badge ${checklist.completed ? 'status-completed' : 'status-pending'}">${checklist.completed ? 'Concluído' : 'Pendente'}</span></td>
-                </tr>
-            `;
-        });
-        
-        html += '</tbody></table>';
-        contentArea.innerHTML = html;
-    } catch (error) {
-        console.error('Erro ao carregar checklists:', error);
-        contentArea.innerHTML = '<p>Erro ao carregar checklists.</p>';
+    if (checklists.length === 0) {
+      contentArea.innerHTML = '<p>Nenhum checklist criado ainda.</p>';
+      return;
     }
+    
+    let html = `
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Atribuído a</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    checklists.forEach(checklist => {
+      html += `
+        <tr>
+          <td>${checklist.title}</td>
+          <td>${checklist.assignee}</td>
+          <td>${new Date(checklist.date).toLocaleDateString()}</td>
+          <td><span class="status-badge ${checklist.completed ? 'status-completed' : 'status-pending'}">${checklist.completed ? 'Concluído' : 'Pendente'}</span></td>
+          <td>
+            <button class="btn btn-small btn-edit" onclick="editChecklist(${checklist.id})">Editar</button>
+            <button class="btn btn-small btn-delete" onclick="deleteChecklist(${checklist.id}, '${checklist.title}')">Excluir</button>
+          </td>
+        </tr>
+      `;
+    });
+    
+    html += '</tbody></table>';
+    contentArea.innerHTML = html;
+  } catch (error) {
+    console.error('Erro ao carregar checklists:', error);
+    contentArea.innerHTML = '<p>Erro ao carregar checklists.</p>';
+  }
 };
 
 window.showFeedbacks = async function() {
-    const contentArea = document.getElementById('contentArea');
-    const contentTitle = document.getElementById('contentTitle');
+  const contentArea = document.getElementById('contentArea');
+  const contentTitle = document.getElementById('contentTitle');
+  
+  contentTitle.textContent = 'Feedbacks';
+  
+  try {
+    const feedbacks = await fetchFeedbacks();
     
-    contentTitle.textContent = 'Feedbacks';
-    
-    try {
-        const feedbacks = await fetchFeedbacks();
-        
-        if (feedbacks.length === 0) {
-            contentArea.innerHTML = '<p>Nenhum feedback enviado ainda.</p>';
-            return;
-        }
-        
-        let html = `
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Destinatário</th>
-                        <th>Data</th>
-                        <th>Mensagem</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        feedbacks.forEach(feedback => {
-            html += `
-                <tr>
-                    <td><strong>${feedback.title}</strong></td>
-                    <td>${feedback.assignee}</td>
-                    <td>${new Date(feedback.date).toLocaleDateString()}</td>
-                    <td>${feedback.message.substring(0, 50)}${feedback.message.length > 50 ? '...' : ''}</td>
-                </tr>
-            `;
-        });
-        
-        html += '</tbody></table>';
-        contentArea.innerHTML = html;
-    } catch (error) {
-        console.error('Erro ao carregar feedbacks:', error);
-        contentArea.innerHTML = '<p>Erro ao carregar feedbacks.</p>';
+    if (feedbacks.length === 0) {
+      contentArea.innerHTML = '<p>Nenhum feedback enviado ainda.</p>';
+      return;
     }
+    
+    let html = `
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Destinatário</th>
+            <th>Data</th>
+            <th>Mensagem</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    feedbacks.forEach(feedback => {
+      html += `
+        <tr>
+          <td><strong>${feedback.title}</strong></td>
+          <td>${feedback.assignee}</td>
+          <td>${new Date(feedback.date).toLocaleDateString()}</td>
+          <td>${feedback.message.substring(0, 50)}${feedback.message.length > 50 ? '...' : ''}</td>
+          <td>
+            <button class="btn btn-small btn-edit" onclick="editFeedback(${feedback.id})">Editar</button>
+            <button class="btn btn-small btn-delete" onclick="deleteFeedback(${feedback.id}, '${feedback.title}')">Excluir</button>
+          </td>
+        </tr>
+      `;
+    });
+    
+    html += '</tbody></table>';
+    contentArea.innerHTML = html;
+  } catch (error) {
+    console.error('Erro ao carregar feedbacks:', error);
+    contentArea.innerHTML = '<p>Erro ao carregar feedbacks.</p>';
+  }
 };
 
 // Funções para criar itens (agora globais)
@@ -293,6 +303,329 @@ document.addEventListener('DOMContentLoaded', function() {
         window.showDashboard();
     }
 });
+
+// Função para editar checklist
+window.editChecklist = async function(checklistId) {
+  try {
+    const checklists = await fetchChecklists();
+    const checklist = checklists.find(c => c.id === checklistId);
+    
+    if (!checklist) {
+      alert('Checklist não encontrado');
+      return;
+    }
+    
+    openEditChecklistModal(checklist);
+  } catch (error) {
+    console.error('Erro ao carregar checklist para edição:', error);
+    alert('Erro ao carregar checklist');
+  }
+};
+
+// Função para excluir checklist
+window.deleteChecklist = async function(checklistId, checklistTitle) {
+  if (!confirm(`Tem certeza que deseja excluir o checklist "${checklistTitle}"?`)) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/checklists/${checklistId}`, {
+      method: 'DELETE'
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('Checklist excluído com sucesso!');
+      if (window.showChecklists) {
+        window.showChecklists();
+      }
+    } else {
+      alert('Erro ao excluir checklist');
+    }
+  } catch (error) {
+    console.error('Erro ao excluir checklist:', error);
+    alert('Erro de conexão ao excluir checklist');
+  }
+};
+
+// Função para editar feedback
+window.editFeedback = async function(feedbackId) {
+  try {
+    const feedbacks = await fetchFeedbacks();
+    const feedback = feedbacks.find(f => f.id === feedbackId);
+    
+    if (!feedback) {
+      alert('Feedback não encontrado');
+      return;
+    }
+    
+    openEditFeedbackModal(feedback);
+  } catch (error) {
+    console.error('Erro ao carregar feedback para edição:', error);
+    alert('Erro ao carregar feedback');
+  }
+};
+
+// Função para excluir feedback
+window.deleteFeedback = async function(feedbackId, feedbackTitle) {
+  if (!confirm(`Tem certeza que deseja excluir o feedback "${feedbackTitle}"?`)) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/feedbacks/${feedbackId}`, {
+      method: 'DELETE'
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('Feedback excluído com sucesso!');
+      if (window.showFeedbacks) {
+        window.showFeedbacks();
+      }
+    } else {
+      alert('Erro ao excluir feedback');
+    }
+  } catch (error) {
+    console.error('Erro ao excluir feedback:', error);
+    alert('Erro de conexão ao excluir feedback');
+  }
+};
+
+// Função para salvar checklist editado
+window.handleEditChecklist = async function(e, checklistId) {
+  e.preventDefault();
+  
+  const title = document.getElementById('editChecklistTitle').value;
+  const description = document.getElementById('editChecklistDescription').value;
+  const assignee = document.getElementById('editChecklistAssignee').value;
+  
+  // Coletar itens do checklist
+  const itemInputs = document.querySelectorAll('#editChecklistItems input[type="text"]');
+  const items = Array.from(itemInputs)
+    .map(input => input.value.trim())
+    .filter(value => value !== '');
+  
+  if (items.length === 0) {
+    alert('Adicione pelo menos um item ao checklist');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/checklists/${checklistId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title,
+        description,
+        assignee,
+        items
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('Checklist atualizado com sucesso!');
+      document.getElementById('editChecklistModal').remove();
+      if (window.showChecklists) {
+        window.showChecklists();
+      }
+    } else {
+      alert('Erro ao atualizar checklist');
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar checklist:', error);
+    alert('Erro de conexão ao atualizar checklist');
+  }
+};
+
+// Função para salvar feedback editado
+window.handleEditFeedback = async function(e, feedbackId) {
+  e.preventDefault();
+  
+  const title = document.getElementById('editFeedbackTitle').value;
+  const message = document.getElementById('editFeedbackMessage').value;
+  const assignee = document.getElementById('editFeedbackAssignee').value;
+  
+  try {
+    const response = await fetch(`${API_BASE}/feedbacks/${feedbackId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title,
+        message,
+        assignee
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('Feedback atualizado com sucesso!');
+      document.getElementById('editFeedbackModal').remove();
+      if (window.showFeedbacks) {
+        window.showFeedbacks();
+      }
+    } else {
+      alert('Erro ao atualizar feedback');
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar feedback:', error);
+    alert('Erro de conexão ao atualizar feedback');
+  }
+};
+
+// Função para abrir modal de edição de checklist
+function openEditChecklistModal(checklist) {
+  const modalHTML = `
+    <div id="editChecklistModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Editar Checklist</h3>
+          <button class="close-btn" id="closeEditChecklistModal">&times;</button>
+        </div>
+        <form id="editChecklistForm">
+          <div class="form-group">
+            <label for="editChecklistTitle">Título do Checklist</label>
+            <input type="text" id="editChecklistTitle" value="${checklist.title}" required>
+          </div>
+          <div class="form-group">
+            <label for="editChecklistDescription">Descrição</label>
+            <textarea id="editChecklistDescription" rows="3">${checklist.description || ''}</textarea>
+          </div>
+          <div class="form-group">
+            <label for="editChecklistAssignee">Atribuir a</label>
+            <select id="editChecklistAssignee">
+              <option value="João" ${checklist.assignee === 'João' ? 'selected' : ''}>João</option>
+              <option value="Maria" ${checklist.assignee === 'Maria' ? 'selected' : ''}>Maria</option>
+              <option value="Pedro" ${checklist.assignee === 'Pedro' ? 'selected' : ''}>Pedro</option>
+              <option value="Ana" ${checklist.assignee === 'Ana' ? 'selected' : ''}>Ana</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Itens do Checklist</label>
+            <div id="editChecklistItems">
+              ${checklist.items ? checklist.items.map(item => `
+                <div class="checklist-item">
+                  <input type="text" value="${item}" placeholder="Digite um item">
+                  <button type="button" class="btn btn-small" onclick="addEditChecklistItem(this)">+</button>
+                </div>
+              `).join('') : ''}
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelEditChecklist">Cancelar</button>
+            <button type="submit" class="btn">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  
+  const modal = document.getElementById('editChecklistModal');
+  const closeBtn = document.getElementById('closeEditChecklistModal');
+  const cancelBtn = document.getElementById('cancelEditChecklist');
+  const form = document.getElementById('editChecklistForm');
+  
+  function closeModal() {
+    modal.remove();
+  }
+  
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  
+  form.addEventListener('submit', function(e) {
+    window.handleEditChecklist(e, checklist.id);
+  });
+}
+
+// Função para abrir modal de edição de feedback
+function openEditFeedbackModal(feedback) {
+  const modalHTML = `
+    <div id="editFeedbackModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Editar Feedback</h3>
+          <button class="close-btn" id="closeEditFeedbackModal">&times;</button>
+        </div>
+        <form id="editFeedbackForm">
+          <div class="form-group">
+            <label for="editFeedbackTitle">Título</label>
+            <input type="text" id="editFeedbackTitle" value="${feedback.title}" required>
+          </div>
+          <div class="form-group">
+            <label for="editFeedbackMessage">Mensagem</label>
+            <textarea id="editFeedbackMessage" rows="5" required>${feedback.message}</textarea>
+          </div>
+          <div class="form-group">
+            <label for="editFeedbackAssignee">Destinatário</label>
+            <select id="editFeedbackAssignee">
+              <option value="João" ${feedback.assignee === 'João' ? 'selected' : ''}>João</option>
+              <option value="Maria" ${feedback.assignee === 'Maria' ? 'selected' : ''}>Maria</option>
+              <option value="Pedro" ${feedback.assignee === 'Pedro' ? 'selected' : ''}>Pedro</option>
+              <option value="Ana" ${feedback.assignee === 'Ana' ? 'selected' : ''}>Ana</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelEditFeedback">Cancelar</button>
+            <button type="submit" class="btn">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  
+  const modal = document.getElementById('editFeedbackModal');
+  const closeBtn = document.getElementById('closeEditFeedbackModal');
+  const cancelBtn = document.getElementById('cancelEditFeedback');
+  const form = document.getElementById('editFeedbackForm');
+  
+  function closeModal() {
+    modal.remove();
+  }
+  
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  
+  form.addEventListener('submit', function(e) {
+    window.handleEditFeedback(e, feedback.id);
+  });
+}
+
+// Função para adicionar item na edição de checklist
+window.addEditChecklistItem = function(button) {
+  const checklistItems = document.getElementById('editChecklistItems');
+  const newItem = document.createElement('div');
+  newItem.className = 'checklist-item';
+  newItem.innerHTML = `
+    <input type="text" placeholder="Digite um item">
+    <button type="button" class="btn btn-small" onclick="addEditChecklistItem(this)">+</button>
+  `;
+  checklistItems.appendChild(newItem);
+};
 
 // Função para carregar itens do funcionário
 // No index.js, substitua a função loadUserItems por esta versão corrigida:
