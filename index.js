@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'http://18.212.217.221:3000/api';
 
 // Funções auxiliares da API
 async function fetchChecklists() {
@@ -421,4 +421,5 @@ async function loadUserItems() {
             </div>
         `;
     }
+
 }
