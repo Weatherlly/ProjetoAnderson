@@ -168,5 +168,6 @@ app.post('/api/feedbacks', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando em 'http://18.212.217.221:${PORT}`);
+
 });
