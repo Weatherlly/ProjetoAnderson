@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Gestor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard-header">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">G</div>
+                <div>
+                    <h2 id="userGreeting">Olá, Gestor</h2>
+                    <p id="userRole">Gestor</p>
+                </div>
+            </div>
+            <button id="logoutBtn" class="btn logout-btn">Sair</button>
+        </div>
+        
+        <div class="dashboard-actions">
+            <div class="action-card" id="createChecklistBtn">
+                <h3>Criar Checklist</h3>
+                <p>Crie um novo checklist para atribuir aos funcionários</p>
+            </div>
+            <div class="action-card" id="createFeedbackBtn">
+                <h3>Criar Feedback</h3>
+                <p>Forneça feedback para os funcionários</p>
+            </div>
+            <div class="action-card" id="viewChecklistsBtn">
+                <h3>Ver Checklists</h3>
+                <p>Visualize todos os checklists criados</p>
+            </div>
+            <div class="action-card" id="viewFeedbacksBtn">
+                <h3>Ver Feedbacks</h3>
+                <p>Visualize todos os feedbacks enviados</p>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="content-header">
+                <h2 id="contentTitle">Dashboard</h2>
+            </div>
+            <div id="contentArea">
+                <p>Selecione uma das opções acima para começar.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+    <script>
+        // Inicialização específica para o gestor
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM carregado - inicializando dashboard do gestor');
+            
+            // Verificar se é o gestor
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || currentUser.role !== 'Gestor') {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Configurar informações do usuário
+            document.getElementById('userGreeting').textContent = `Olá, ${currentUser.name}`;
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            });
+            
+            // Configurar eventos dos botões de ação
+            document.getElementById('createChecklistBtn').addEventListener('click', function() {
+                console.log('Abrindo modal de checklist');
+                openChecklistModal();
+            });
+            
+            document.getElementById('createFeedbackBtn').addEventListener('click', function() {
+                console.log('Abrindo modal de feedback');
+                openFeedbackModal();
+            });
+            
+            document.getElementById('viewChecklistsBtn').addEventListener('click', function() {
+                console.log('Visualizando checklists');
+                if (window.showChecklists) {
+                    window.showChecklists();
+                }
+            });
+            
+            document.getElementById('viewFeedbacksBtn').addEventListener('click', function() {
+                console.log('Visualizando feedbacks');
+                if (window.showFeedbacks) {
+                    window.showFeedbacks();
+                }
+            });
+            
+            // Mostrar dashboard inicial
+            if (window.showDashboard) {
+                window.showDashboard();
+            }
+            
+            console.log('Dashboard do gestor inicializado com sucesso');
+        });
+
+        // Função para abrir modal de checklist (criada dinamicamente)
+        function openChecklistModal() {
+            // Criar modal dinamicamente
+            const modalHTML = `
+                <div id="createChecklistModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Criar Novo Checklist</h3>
+                            <button class="close-btn" id="closeChecklistModal">&times;</button>
+                        </div>
+                        <form id="checklistForm">
+                            <div class="form-group">
+                                <label for="checklistTitle">Título do Checklist</label>
+                                <input type="text" id="checklistTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="checklistDescription">Descrição</label>
+                                <textarea id="checklistDescription" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="checklistAssignee">Atribuir a</label>
+                                <select id="checklistAssignee">
+                                    <option value="João">João</option>
+                                    <option value="Maria">Maria</option>
+                                    <option value="Pedro">Pedro</option>
+                                    <option value="Ana">Ana</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Itens do Checklist</label>
+                                <div id="checklistItems">
+                                    <div class="checklist-item">
+                                        <input type="text" placeholder="Digite um item">
+                                        <button type="button" class="btn btn-small" onclick="addChecklistItem(this)">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="cancelChecklist">Cancelar</button>
+                                <button type="submit" class="btn">Criar Checklist</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar modal ao body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Configurar eventos do modal
+            const modal = document.getElementById('createChecklistModal');
+            const closeBtn = document.getElementById('closeChecklistModal');
+            const cancelBtn = document.getElementById('cancelChecklist');
+            const form = document.getElementById('checklistForm');
+            
+            // Fechar modal
+            function closeModal() {
+                modal.remove();
+            }
+            
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            
+            // Fechar ao clicar fora
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Submit do form
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (window.handleCreateChecklist) {
+                    window.handleCreateChecklist(e);
+                    closeModal();
+                }
+            });
+        }
+
+        // Função para abrir modal de feedback (criada dinamicamente)
+        function openFeedbackModal() {
+            // Criar modal dinamicamente
+            const modalHTML = `
+                <div id="createFeedbackModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Criar Feedback</h3>
+                            <button class="close-btn" id="closeFeedbackModal">&times;</button>
+                        </div>
+                        <form id="feedbackForm">
+                            <div class="form-group">
+                                <label for="feedbackTitle">Título</label>
+                                <input type="text" id="feedbackTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="feedbackMessage">Mensagem</label>
+                                <textarea id="feedbackMessage" rows="5" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="feedbackAssignee">Destinatário</label>
+                                <select id="feedbackAssignee">
+                                    <option value="João">João</option>
+                                    <option value="Maria">Maria</option>
+                                    <option value="Pedro">Pedro</option>
+                                    <option value="Ana">Ana</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="cancelFeedback">Cancelar</button>
+                                <button type="submit" class="btn">Enviar Feedback</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar modal ao body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Configurar eventos do modal
+            const modal = document.getElementById('createFeedbackModal');
+            const closeBtn = document.getElementById('closeFeedbackModal');
+            const cancelBtn = document.getElementById('cancelFeedback');
+            const form = document.getElementById('feedbackForm');
+            
+            // Fechar modal
+            function closeModal() {
+                modal.remove();
+            }
+            
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            
+            // Fechar ao clicar fora
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Submit do form
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (window.handleCreateFeedback) {
+                    window.handleCreateFeedback(e);
+                    closeModal();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

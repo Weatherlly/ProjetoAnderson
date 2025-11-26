@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1761922700381,
+    "title": "teste",
+    "description": "teste",
+    "assignee": "João",
+    "items": [
+      "teste"
+    ],
+    "date": "2025-10-31T14:58:20.381Z",
+    "completed": true,
+    "completedDate": "2025-10-31T17:23:23.826Z",
+    "itemsCompleted": [
+      0
+    ]
+  }
+]
