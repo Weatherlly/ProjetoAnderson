@@ -65,8 +65,8 @@
             
             try {
                 const [checklistsResponse, feedbacksResponse] = await Promise.all([
-                    fetch('http://localhost:3000/api/checklists'),
-                    fetch('http://localhost:3000/api/feedbacks')
+                    fetch('http://18.212.217.221:3000/api/checklists'),
+                    fetch('http://18.212.217.221:3000/api/feedbacks')
                 ]);
 
                 const checklists = await checklistsResponse.json();
@@ -164,7 +164,7 @@
         // Função para abrir modal de detalhes do checklist
         async function openChecklistDetail(checklistId) {
             try {
-                const response = await fetch('http://localhost:3000/api/checklists');
+                const response = await fetch('http://18.212.217.221:3000/api/checklists');
                 const checklists = await response.json();
                 const checklist = checklists.find(c => c.id === checklistId);
                 
@@ -274,7 +274,7 @@
         // Função para alternar item individual do checklist
         async function toggleChecklistItem(checklistId, itemIndex, isCompleted) {
             try {
-                const response = await fetch(`http://localhost:3000/api/checklists/${checklistId}/items`, {
+                const response = await fetch(`http://18.212.217.221:3000/api/checklists/${checklistId}/items`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -326,4 +326,5 @@
         }
     </script>
 </body>
+
 </html>
